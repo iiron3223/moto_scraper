@@ -10,16 +10,16 @@ class MotoSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        articles = response.css("article")
+        articles = response.xpath('//article[@data-testid="listing-ad"]')
 
         for article in articles:
             # fmt: off
             info = article.css('ul').css('li::text').getall()[:4]
             yield{
 
-                  'name': article.css('a::text').get(),
+                  'name': article.xpath('.//h2//a/text()').get(),
                   'id': article.attrib['id'],
-                  'url': article.css('a').attrib['href'],
+                  'url': article.xpath('.//h2//a').attrib['href'],
                   'price': article.css('span::text').get(),
                   'year': info[0],
                   'distance': info[1],

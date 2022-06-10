@@ -7,6 +7,7 @@ authors = ["Dominik Baran <iiron3223@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 Scrapy = "^2.6.1"
+scrapy-user-agents = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

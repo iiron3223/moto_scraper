@@ -1,30 +1,39 @@
 import scrapy
 from scrapy.loader import ItemLoader
 
+URL = "https://www.otomoto.pl/osobowe/seg-city-car--seg-compact/kielce?search%5Bfilter_enum_fuel_type%5D=petrol&search%5Filister_enum_damaged%5D=0&search%5Bfilter_enum_no_accident%5D=1&search%5Bdist%5D=25&search%5Bfilter_float_mileage%3Ato%5D=250000&search%5Bfilter_float_price%3Afrom%5D=10000&search%5Bfilter_float_price%3Ato%5D=20000"
+
 
 class MotoSpider(scrapy.Spider):
-    name = "moto_spider"
+    name = "motospider"
     allowed_domains = ["otomoto.pl"]
-    start_urls = [
-        "https://www.otomoto.pl/osobowe/seg-cabrio--seg-city-car--seg-combi--seg-compact--seg-coupe--seg-mini--seg-minivan--seg-suv/kielce?search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bdist%5D=25&search%5Bfilter_float_mileage%3Ato%5D=250000&search%5Bfilter_float_price%3Afrom%5D=10000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Badvanced_search_expanded%5D=true"
-    ]
+    start_urls = [URL]
+    page_num = 1
 
     def parse(self, response):
-        articles = response.xpath('//article[@data-testid="listing-ad"]')
+        listings = response.xpath('//article[@data-testid="listing-ad"]')
+        for listing in listings:
+            car_info = listing.css("ul").css("li::text").getall()
+            if car_info[0] == "Niski przebieg":
+                car_info = car_info[1:5]
+            else:
+                car_info = car_info[0:4]
 
-        for article in articles:
-            # fmt: off
-            info = article.css('ul').css('li::text').getall()[:4]
-            yield{
-
-                  'name': article.xpath('.//h2//a/text()').get(),
-                  'id': article.attrib['id'],
-                  'url': article.xpath('.//h2//a').attrib['href'],
-                  'price': article.css('span::text').get(),
-                  'year': info[0],
-                  'distance': info[1],
-                  'engine_volume': info[2],
-                  'fuel': info[3],
-                  'photo_url': article.css('img').attrib['src'],
+            yield {
+                "name": listing.xpath(".//h2//a/text()").get(),
+                "id": listing.attrib["id"],
+                "price": listing.css("span::text").get(),
+                "year": car_info[0],
+                "distance": car_info[1],
+                "engine_volume": car_info[2],
+                "fuel": car_info[3],
+                "location": listing.xpath(".//div/p[svg]/text()").get(),
+                "url": listing.xpath(".//h2//a").attrib["href"],
+                "photo_url": listing.css("img").attrib["src"],
             }
-            # fmt: on
+
+        last_page = response.xpath('//li[@title="Next Page"]').attrib["aria-disabled"]
+        if last_page == "false":
+            self.page_num += 1
+            next_page = f"{URL}&page={self.page_num}"
+            yield scrapy.Request(next_page, callback=self.parse)

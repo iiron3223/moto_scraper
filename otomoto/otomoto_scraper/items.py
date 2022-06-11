@@ -1,12 +1,14 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
-class OtomotoScraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class CarItem(scrapy.Item):
+    name = scrapy.Field()
+    id = scrapy.Field()
+    price = scrapy.Field()
+    year = scrapy.Field()
+    distance = scrapy.Field()
+    engine_volume = scrapy.Field()
+    fuel = scrapy.Field()
+    location = scrapy.Field()
+    url = scrapy.Field()
+    photo_url = scrapy.Field()

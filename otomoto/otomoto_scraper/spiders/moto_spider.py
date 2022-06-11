@@ -1,8 +1,9 @@
 import scrapy
+from otomoto_scraper.itemloaders import CarItemLoader
 from otomoto_scraper.items import CarItem
 from scrapy.loader import ItemLoader
 
-URL = "https://www.otomoto.pl/osobowe/seg-city-car--seg-compact/kielce?search%5Bfilter_enum_fuel_type%5D=petrol&search%5Filister_enum_damaged%5D=0&search%5Bfilter_enum_no_accident%5D=1&search%5Bdist%5D=25&search%5Bfilter_float_mileage%3Ato%5D=250000&search%5Bfilter_float_price%3Afrom%5D=10000&search%5Bfilter_float_price%3Ato%5D=20000"
+URL = "https://www.otomoto.pl/osobowe/seg-city-car--seg-compact/kielce?search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bfilter_enum_no_accident%5D=1&search%5Bdist%5D=25&search%5Bfilter_float_mileage%3Ato%5D=250000&search%5Bfilter_float_price%3Afrom%5D=10000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Badvanced_search_expanded%5D=true"
 
 
 class MotoSpider(scrapy.Spider):
@@ -20,19 +21,19 @@ class MotoSpider(scrapy.Spider):
             else:
                 car_info = car_info[0:4]
 
-            car_item = CarItem()
-            car_item["name"] = listing.xpath(".//h2//a/text()").get()
-            car_item["id"] = listing.attrib["id"]
-            car_item["price"] = listing.css("span::text").get()
-            car_item["year"] = car_info[0]
-            car_item["distance"] = car_info[1]
-            car_item["engine_volume"] = car_info[2]
-            car_item["fuel"] = car_info[3]
-            car_item["location"] = listing.xpath(".//div/p[svg]/text()").get()
-            car_item["url"] = listing.xpath(".//h2//a").attrib["href"]
-            car_item["photo_url"] = listing.css("img").attrib["src"]
+            car = CarItemLoader(item=CarItem(), selector=listing)
+            car.add_xpath("name", ".//h2//a/text()")
+            car.add_value("id", listing.attrib["id"])
+            car.add_xpath("price", ".//div/span/text()")
+            car.add_value("year", car_info[0])
+            car.add_value("distance", car_info[1])
+            car.add_value("engine_volume", car_info[2])
+            car.add_value("fuel", car_info[3])
+            car.add_xpath("location", ".//div/p[svg]/text()")
+            car.add_xpath("url", ".//h2//a/@href")
+            car.add_value("photo_url", listing.css("img").attrib["src"])
 
-            yield car_item
+            yield car.load_item()
 
         last_page = response.xpath('//li[@title="Next Page"]').attrib["aria-disabled"]
         if last_page == "false":

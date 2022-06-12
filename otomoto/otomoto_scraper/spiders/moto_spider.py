@@ -5,6 +5,7 @@ from otomoto_scraper.itemloaders import CarItemLoader
 from otomoto_scraper.items import CarItem
 from scrapy.loader import ItemLoader
 
+# Starting url, built containing filters, built using otomoto.pl search feature
 URL = "https://www.otomoto.pl/osobowe/seg-city-car--seg-compact/kielce?search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bfilter_enum_no_accident%5D=1&search%5Bdist%5D=25&search%5Bfilter_float_mileage%3Ato%5D=250000&search%5Bfilter_float_price%3Afrom%5D=10000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Badvanced_search_expanded%5D=true"
 
 
@@ -17,12 +18,14 @@ class MotoSpider(scrapy.Spider):
     def parse(self, response):
         listings = response.xpath('//article[@data-testid="listing-ad"]')
         for listing in listings:
+            # Get additional info about car
             car_info = listing.css("ul").css("li::text").getall()
             if car_info[0] == "Niski przebieg":
                 car_info = car_info[1:5]
             else:
                 car_info = car_info[0:4]
 
+            # Create car item and scrape all data
             car = CarItemLoader(item=CarItem(), selector=listing)
             car.add_xpath("name", ".//h2//a/text()")
             car.add_value("id", listing.attrib["id"])
@@ -37,6 +40,7 @@ class MotoSpider(scrapy.Spider):
 
             yield car.load_item()
 
+        # Follow to the next page
         try:
             last_page = response.xpath('//li[@title="Next Page"]').attrib[
                 "aria-disabled"

@@ -1,13 +1,46 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+import json
+import os
 
-
-# useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
+from scrapy.utils.project import data_path
+
+ids_filename = "car_ids.txt"
+ids_data_path = data_path(ids_filename)
+new_cars_filename = "new_cars.json"
+new_cars_data_path = data_path(new_cars_filename)
 
 
-class OtomotoScraperPipeline:
+class NewCarsPipeline:
+    def __init__(self):
+        self.new_cars = []
+        self.new_ids = []
+        self.old_car_ids = {}
+
+    def open_spider(self, spider):
+        # Read ids of cars from previous scrapings
+        if os.path.exists(ids_data_path) and os.path.getsize(ids_data_path) > 0:
+            with open(ids_data_path, "r") as f:
+                content = f.read().strip()[:-1]
+                self.old_car_ids = {car_id for car_id in content.split(";")}
+
     def process_item(self, item, spider):
+        adapter = ItemAdapter(item)
+
+        # Check if car was already scraped
+        # If it is new, save it
+        car_id = adapter.get("id")
+        if car_id not in self.old_car_ids:
+            self.new_cars.append(dict(item))
+            self.new_ids.append(car_id)
         return item
+
+    def close_spider(self, spider):
+        # Save ids of cars that were not present during previous scrapings
+        if self.new_ids:
+            ids_to_write = ";".join(self.new_ids) + ";"
+            with open(ids_data_path, "a", encoding="utf8") as f:
+                f.write(ids_to_write)
+
+        # Save new cars
+        with open(new_cars_data_path, "w") as f:
+            json.dump(self.new_cars, f, indent=4)

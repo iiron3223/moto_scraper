@@ -56,6 +56,8 @@ DOWNLOADER_MIDDLEWARES = {
     "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
 }
 
+FAKEUSERAGENT_FALLBACK = "Mozilla"
+
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 # EXTENSIONS = {
@@ -64,9 +66,9 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'otomoto_scraper.pipelines.OtomotoScraperPipeline': 300,
-# }
+ITEM_PIPELINES = {
+    "otomoto_scraper.pipelines.NewCarsPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

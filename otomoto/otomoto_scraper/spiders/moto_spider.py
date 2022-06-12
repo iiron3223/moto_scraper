@@ -1,3 +1,5 @@
+import logging
+
 import scrapy
 from otomoto_scraper.itemloaders import CarItemLoader
 from otomoto_scraper.items import CarItem
@@ -35,7 +37,14 @@ class MotoSpider(scrapy.Spider):
 
             yield car.load_item()
 
-        last_page = response.xpath('//li[@title="Next Page"]').attrib["aria-disabled"]
+        try:
+            last_page = response.xpath('//li[@title="Next Page"]').attrib[
+                "aria-disabled"
+            ]
+        except KeyError:
+            logging.ERROR("Cannot find next page ('aria-disabled' not found)")
+            last_page = "true"
+
         if last_page == "false":
             self.page_num += 1
             next_page = f"{URL}&page={self.page_num}"

@@ -1,5 +1,11 @@
+"""Module for creating body of email report with scraped cars."""
+
+
 class MailBuilder:
+    """Class for creating report in html format."""
+
     def __init__(self, cars: list):
+        """Create instance using list of dictionaries with scraped cars."""
         self.cars = cars
 
     def _build_car_message(self, car: dict):
@@ -23,6 +29,7 @@ class MailBuilder:
 """
 
     def build_email_message(self):
+        """Create full html report, containing every car."""
         return f"""\
 <html>
   <head></head>

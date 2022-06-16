@@ -10,18 +10,23 @@ from mailer.body import MailBuilder
 
 
 class MailSender:
-    def __init__(self, new_cars_filepath):
+    """Class for creating and sending emails based on Scrapy report."""
+
+    def __init__(self, new_cars_filepath: str):
+        """Build body of message using report in json format."""
         self.new_car_filepath = new_cars_filepath
         self.new_cars = self._load_new_cars()
         mail_builder = MailBuilder(self.new_cars)
         self.msg_body = mail_builder.build_email_message()
 
     def _load_new_cars(self):
+        """Load json car report."""
         with open(self.new_car_filepath) as car_file:
             cars = json.load(car_file)
         return cars
 
-    def send_email(self, sender_mail, password, receipients):
+    def send_email(self, sender_mail: str, password: str, receipients: list):
+        """Send email with report about scraped cars."""
         if self.new_cars:
             msg = EmailMessage()
             msg["From"] = Address("OtomotoScraper")
@@ -38,6 +43,7 @@ class MailSender:
             # TODO Attach file with all scraped cars report
 
     def _create_subject(self):
+        """Create subject for email with proper grammatical form."""
         new_cars_count = len(self.new_cars)
         last_digit = new_cars_count % 10
 

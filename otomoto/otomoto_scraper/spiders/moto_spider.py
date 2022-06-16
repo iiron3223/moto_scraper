@@ -3,16 +3,21 @@ import logging
 import scrapy
 from otomoto_scraper.itemloaders import CarItemLoader
 from otomoto_scraper.items import CarItem
-from scrapy.loader import ItemLoader
+from scrapy.utils.project import data_path
 
-# Starting url, built containing filters, built using otomoto.pl search feature
-URL = "https://www.otomoto.pl/osobowe/seg-city-car--seg-compact/kielce?search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bfilter_enum_no_accident%5D=1&search%5Bdist%5D=25&search%5Bfilter_float_mileage%3Ato%5D=250000&search%5Bfilter_float_price%3Afrom%5D=10000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Badvanced_search_expanded%5D=true"
+
+def get_starting_url():
+    """Read starting url from file."""
+    url_filepath = data_path("target_url.txt")
+    with open(url_filepath) as f:
+        url = f.read()
+    return url
 
 
 class MotoSpider(scrapy.Spider):
     name = "motospider"
     allowed_domains = ["otomoto.pl"]
-    start_urls = [URL]
+    start_urls = [get_starting_url()]
     page_num = 1
 
     def parse(self, response):

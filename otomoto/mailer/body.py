@@ -28,7 +28,7 @@ class MailBuilder:
 <hr>
 """
 
-    def build_email_message(self):
+    def build_html_report(self):
         """Create full html report, containing every car."""
         return f"""\
 <html>

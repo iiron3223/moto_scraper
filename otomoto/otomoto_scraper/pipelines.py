@@ -8,6 +8,8 @@ ids_filename = "car_ids.txt"
 ids_data_path = data_path(ids_filename)
 new_cars_filename = "new_cars.json"
 new_cars_data_path = data_path(new_cars_filename)
+all_cars_filename = "all_cars.json"
+all_cars_data_path = data_path(all_cars_filename)
 
 
 class NewCarsPipeline:
@@ -15,6 +17,7 @@ class NewCarsPipeline:
         self.new_cars = []
         self.new_ids = []
         self.old_car_ids = {}
+        self.all_cars = []
 
     def open_spider(self, spider):
         # Read ids of cars from previous scrapings
@@ -29,9 +32,11 @@ class NewCarsPipeline:
         # Check if car was already scraped
         # If it is new, save it
         car_id = adapter.get("id")
+        car_dict = dict(item)
         if car_id not in self.old_car_ids:
-            self.new_cars.append(dict(item))
+            self.new_cars.append(car_dict)
             self.new_ids.append(car_id)
+        self.all_cars.append(car_dict)
         return item
 
     def close_spider(self, spider):
@@ -44,3 +49,7 @@ class NewCarsPipeline:
         # Save new cars
         with open(new_cars_data_path, "w", encoding="utf8") as f:
             json.dump(self.new_cars, f, indent=4)
+
+        # Save all cars
+        with open(all_cars_data_path, "w", encoding="utf8") as f:
+            json.dump(self.all_cars, f, indent=4)

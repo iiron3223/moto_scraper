@@ -12,16 +12,21 @@ from mailer.body import MailBuilder
 class MailSender:
     """Class for creating and sending emails based on Scrapy report."""
 
-    def __init__(self, new_cars_filepath: str):
-        """Build body of message using report in json format."""
-        self.new_car_filepath = new_cars_filepath
-        self.new_cars = self._load_new_cars()
+    def __init__(self, new_cars_filepath: str, all_cars_filepath: str):
+        """Build body of message and attachment using reports in json format."""
+        self.new_cars_filepath = new_cars_filepath
+        self.new_cars = self._load_cars(self.new_cars_filepath)
         mail_builder = MailBuilder(self.new_cars)
-        self.msg_body = mail_builder.build_email_message()
+        self.msg_body = mail_builder.build_html_report()
 
-    def _load_new_cars(self):
+        self.all_cars_filepath = all_cars_filepath
+        self.all_cars = self._load_cars(self.all_cars_filepath)
+        attachment_builder = MailBuilder(self.all_cars)
+        self.attachment = attachment_builder.build_html_report()
+
+    def _load_cars(self, path: str):
         """Load json car report."""
-        with open(self.new_car_filepath) as car_file:
+        with open(path) as car_file:
             cars = json.load(car_file)
         return cars
 
@@ -33,6 +38,7 @@ class MailSender:
             msg["Subject"] = self._create_subject()
             msg.add_header("Content-Type", "text/html; charset=utf-8")
             msg.set_payload(self.msg_body)
+            msg.add_attachment(self.attachment, filename="all_cars.html")
 
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
@@ -40,7 +46,6 @@ class MailSender:
                 server.sendmail(sender_mail, receipients, msg.as_string())
 
             # TODO Overwrite file with new cars, maybe in parent?
-            # TODO Attach file with all scraped cars report
 
     def _create_subject(self):
         """Create subject for email with proper grammatical form."""

@@ -38,7 +38,12 @@ class MailSender:
             msg["Subject"] = self._create_subject()
             msg.add_header("Content-Type", "text/html; charset=utf-8")
             msg.set_payload(self.msg_body)
-            msg.add_attachment(self.attachment, filename="all_cars.html")
+            msg.add_attachment(
+                self.attachment,
+                charset="utf-8",
+                subtype="html",
+                filename="all_cars.html",
+            )
 
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:

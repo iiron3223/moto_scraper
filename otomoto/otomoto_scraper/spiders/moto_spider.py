@@ -46,7 +46,7 @@ class MotoSpider(scrapy.Spider):
                 "aria-disabled"
             ]
         except KeyError:
-            logging.ERROR("Cannot find next page ('aria-disabled' not found)")
+            logging.error("Cannot find next page ('aria-disabled' not found)")
             last_page = "true"
 
         if last_page == "false":

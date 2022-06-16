@@ -32,7 +32,9 @@ class MailBuilder:
         """Create full html report, containing every car."""
         return f"""\
 <html>
-  <head></head>
+  <head>
+    <meta charset="utf-8">
+  </head>
   <body>
     {''.join(self._build_car_message(car) for car in self.cars)}
   </body>

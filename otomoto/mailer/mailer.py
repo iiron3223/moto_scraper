@@ -45,7 +45,12 @@ class MailSender:
                 server.login(sender_mail, password)
                 server.sendmail(sender_mail, receipients, msg.as_string())
 
-            # TODO Overwrite file with new cars, maybe in parent?
+            self._clear_new_cars_file()
+
+    def _clear_new_cars_file(self):
+        """Clear data from new car json file."""
+        with open(self.new_cars_filepath, "w") as f:
+            f.write("[]")
 
     def _create_subject(self):
         """Create subject for email with proper grammatical form."""

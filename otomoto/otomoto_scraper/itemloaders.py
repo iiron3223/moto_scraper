@@ -11,5 +11,5 @@ class CarItemLoader(ItemLoader):
     # price_in = MapCompose(lambda x: int(str.rstrip(x.replace(" ", ""), "PLN")))
     # distance_in = MapCompose(lambda x: int(str.rstrip(x.replace(" ", ""), "km")))
     # engine_volume_in = MapCompose(lambda x: int(str.rstrip(x.replace(" ", ""), "cm3")))
-    fuel_in = MapCompose(str.lower)
+    # fuel_in = MapCompose(str.lower)
     location_in = MapCompose(lambda x: x.split(" ")[:-1])

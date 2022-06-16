@@ -42,5 +42,5 @@ class NewCarsPipeline:
                 f.write(ids_to_write)
 
         # Save new cars
-        with open(new_cars_data_path, "w") as f:
+        with open(new_cars_data_path, "w", encoding="utf8") as f:
             json.dump(self.new_cars, f, indent=4)

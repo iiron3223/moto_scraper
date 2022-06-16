@@ -12,11 +12,11 @@ class MailBuilder:
   </div>
   <div style="padding-left:10px">
     <p><h2><a href={car["url"]}>{car["name"]}</a></h2></p>
-    <p> <h3 style="color:Orange;">{car["price"]}</h3> </p>
+    <p><h3 style="color:Orange;">{car["price"]}</h3> </p>
     <p>Rocznik: <b>{car["year"]}</b></p>
     <p>Przebieg: <b>{car["distance"]}</b></p>
-    <p>Silnik: {car["engine_volume"]} {car["fuel"]}</p>
-    <p> Lokalizacja: <b>{car["location"]}</b></p>
+    <p>Silnik: {car["engine_volume"]} <b>{car["fuel"]}</b></p>
+    <p>Lokalizacja: <b>{car["location"]}</b></p>
   </div>
 </div>
 <hr>

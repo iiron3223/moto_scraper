@@ -17,7 +17,8 @@ def get_starting_url():
 class MotoSpider(scrapy.Spider):
     name = "motospider"
     allowed_domains = ["otomoto.pl"]
-    start_urls = [get_starting_url()]
+    url = get_starting_url()
+    start_urls = [url]
     page_num = 1
 
     def parse(self, response):
@@ -56,5 +57,5 @@ class MotoSpider(scrapy.Spider):
 
         if last_page == "false":
             self.page_num += 1
-            next_page = f"{URL}&page={self.page_num}"
+            next_page = f"{self.url}&page={self.page_num}"
             yield scrapy.Request(next_page, callback=self.parse)

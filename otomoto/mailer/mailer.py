@@ -1,6 +1,7 @@
 """Module for creating and sending mail reports about scraped cars."""
 
 import json
+import logging
 import smtplib
 import ssl
 from email.headerregistry import Address
@@ -30,9 +31,11 @@ class MailSender:
             cars = json.load(car_file)
         return cars
 
-    def send_email(self, sender_mail: str, password: str, receipients: list):
+    def send_email(self, sender_mail: str, password: str, recipients: list):
         """Send email with report about scraped cars."""
+        logging.info(f"Number of scraped cars: {len(self.all_cars)}")
         if self.new_cars:
+            logging.info(f"{len(self.new_cars)} new cars found")
             msg = EmailMessage()
             msg["From"] = Address("OtomotoScraper")
             msg["Subject"] = self._create_subject()
@@ -48,9 +51,12 @@ class MailSender:
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 server.login(sender_mail, password)
-                server.sendmail(sender_mail, receipients, msg.as_string())
+                server.sendmail(sender_mail, recipients, msg.as_string())
+                logging.info(f"Email sent to {recipients}")
 
             self._clear_new_cars_file()
+        else:
+            logging.info("No new cars")
 
     def _clear_new_cars_file(self):
         """Clear data from new car json file."""

@@ -37,12 +37,26 @@ if __name__ == "__main__":
     recipients_filepath = data_path("recipients.txt")
     recipients = load_recipients(recipients_filepath)
 
-    # Start crawl
-    logging.info("Starting scraping using motospider")
-    os.system("scrapy crawl --nolog motospider")
+    # Track number of attempts in case of failed scraping
+    attempts_limit = 3
+    attempts_made = 0
+    finished = False
 
-    # Send emails
-    mail_sender = MailSender(new_cars_filepath, all_cars_filepath)
-    mail_sender.send_email(username, password, recipients)
+    while not finished and attempts_made < attempts_limit:
+        attempts_made += 1
 
-    logging.info("Job completed")
+        # Start crawl
+        logging.info(f"Starting scraping using motospider (attempt {attempts_made})")
+        os.system("scrapy crawl --nolog motospider")
+
+        # Send emails
+        mail_sender = MailSender(new_cars_filepath, all_cars_filepath)
+        mail_sender.send_email(username, password, recipients)
+
+        finished = bool(mail_sender.all_cars)
+
+    # Log end of task
+    if finished:
+        logging.info("Job completed")
+    else:
+        logging.warning("Scraping failed")

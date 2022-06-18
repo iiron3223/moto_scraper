@@ -51,7 +51,7 @@ class MailSender:
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 server.login(sender_mail, password)
-                server.sendmail(sender_mail, recipients, msg.as_string())
+                server.sendmail(sender_mail, recipients, msg.as_string().encode("utf8"))
                 logging.info(f"Email sent to {recipients}")
 
             self._clear_new_cars_file()

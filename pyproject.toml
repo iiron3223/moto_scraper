@@ -2,19 +2,16 @@
 name = "otomoto"
 version = "0.1.0"
 description = ""
-authors = ["Dominik Baran <iiron3223@gmail.com>"]
+authors = []
 
 [tool.poetry.dependencies]
 python = "^3.10"
 Scrapy = "^2.6.1"
 scrapy-user-agents = "^0.1.1"
-google-auth-httplib2 = "^0.1.0"
-google-auth-oauthlib = "^0.5.2"
 python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-google-api-python-client = "^2.51.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
